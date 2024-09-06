@@ -43,9 +43,9 @@ int chutesRealizados(char letra, char chutesMaximos[26], int tentativas) {
 }
 
 int main() {
-    // Declaração Inicial das Váriaveis
+    // Declaração Inicial das Variáveis
     int ganhou = 0, enforcou = 0, tentativas = 0;
-    char palavraSecreta[20];
+    char palavraSecreta[20] = "MELANCIA";
     char chutesMaximos[26];
 
     aberturaForca();
