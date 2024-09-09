@@ -1,6 +1,16 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <time.h>
+#include "forca.h"
 
+// Declaração Inicial das Variáveis Globais
+char palavraSecreta[TAMANHO_PALAVRA_SECRETA];
+char chutesMaximos[26];
+int chutesRealizados = 0, tamanhoPalavra;
+
+
+// Funções do Código
 void aberturaForca() {
 
     printf("/****************/\n");
@@ -9,24 +19,24 @@ void aberturaForca() {
 
 }
 
-void realizarChute(char chutesMaximos[26], int* tentativas) {
+void realizarChute() {
 
     char chuteAtual;
 
     scanf(" %c", &chuteAtual);
         
     // Registrar todos os chutes realizados
-    chutesMaximos[(*tentativas)] = chuteAtual;
-    (*tentativas)++;
+    chutesMaximos[chutesRealizados] = chuteAtual;
+    chutesRealizados++;
 
 }
 
-int chutesRealizados(char letra, char chutesMaximos[26], int tentativas) {
+int chuteJaRealizado(char letra) {
 
     int encontrada = 0;
 
     // Loop para percorrer os chutes anteriores, armazenando os mesmos em Chutes Maximos
-    for(int j = 0; j < tentativas; j++) {
+    for(int j = 0; j < chutesRealizados; j++) {
                 
         // Validação de acertos
         if(chutesMaximos[j] == letra) {
@@ -42,21 +52,12 @@ int chutesRealizados(char letra, char chutesMaximos[26], int tentativas) {
 
 }
 
-int main() {
-    // Declaração Inicial das Variáveis
-    int ganhou = 0, enforcou = 0, tentativas = 0;
-    char palavraSecreta[20] = "MELANCIA";
-    char chutesMaximos[26];
+void desenharForca() {
 
-    aberturaForca();
-
-    // Loop principal do código, onde ocorre o jogo da forca
-    do {
-
-        // Loop para percorrer os caracteres da Palavra Secreta
-        for(int i = 0; i < strlen(palavraSecreta); i++) {
+    // Loop para percorrer os caracteres da Palavra Secreta
+        for(int i = 0; i < tamanhoPalavra; i++) {
             
-            int encontrada = chutesRealizados(palavraSecreta[i], chutesMaximos, tentativas);
+            int encontrada = chuteJaRealizado(palavraSecreta[i]);
 
             // Impressão da letra se acertada
             if(encontrada) {
@@ -73,8 +74,148 @@ int main() {
         
         printf("\n");
 
-        realizarChute(chutesMaximos, &tentativas);
+}
 
-    } while (!ganhou && !enforcou);
+void escolherPalavra() {
+
+    FILE* f;
+
+    f = fopen("palavras.txt", "r");
+
+    if (f == 0) {
+
+        printf("Desculpe, banco de dados não está disponível\n");
+        exit(1);
+
+    }
+
+    int quantidadeDePalavras;
+    fscanf(f, "%d", &quantidadeDePalavras);
+
+    srand(time(0));
+    int randomizador = rand() % quantidadeDePalavras;
+
+    for (int i = 0; i <= randomizador; i++) {
+
+        fscanf(f, "%s", palavraSecreta);
+
+    }
+
+    fclose(f);
+
+}
+
+void adicionarNovaPalavra() {
+
+    char adicionarPalavra;
+
+    printf("Você deseja adicionar uma nova palavra no jogo? (S/N)\n");
+    scanf(" %c", adicionarPalavra);
+
+    if (adicionarPalavra == 'S') {
+
+        char novaPalavra[TAMANHO_PALAVRA_SECRETA];
+        printf("Qual a nova palavra? \n");
+        scanf("%s", novaPalavra);
+
+        FILE* f;
+
+        f = fopen("palavras.txt", "r+");
+
+        if (f == 0) {
+
+            printf("Desculpe, banco de dados não está disponível\n");
+            exit(1);
+
+        }
+
+        int quantidadePalavra;
+        fscanf(f, "%d", &quantidadePalavra);
+        quantidadePalavra++;
+
+        fseek(f , 0, SEEK_SET);
+        fprintf(f, "\n%s", novaPalavra);
+
+        fseek(f , 0, SEEK_END);
+        fprintf(f, "\n%s", novaPalavra);
+
+        fprintf(f, "\n%s", novaPalavra);
+
+        fclose(f);
+
+    }
+
+}
+
+int enforcou() {
+
+    int erros = 0;
+
+    // Loop de todos os chutes realizados
+    for (int i = 0; i < chutesRealizados; i++) {
+
+        int existe = 0;
+
+        // Verificar o array, descobrindo se possui a letra chutada
+        for (int j = 0; j < tamanhoPalavra; j++) {
+
+            if (chutesMaximos[i] == palavraSecreta[j]) {
+
+                existe = 1;
+                break;
+
+            }
+
+        }
+
+        if (!existe) {
+            erros++;
+        }
+    }
+    // Return booleano
+    return erros >= 5;
+}
+
+int acertou() {
+
+    for (int i = 0; i < tamanhoPalavra; i++) {
+
+        if (!chuteJaRealizado(palavraSecreta[i])) {
+
+            return 0;
+
+        }
+
+    }
+
+    return 1;
+
+}
+
+int main() {
+
+    escolherPalavra();
+    aberturaForca();
+
+    // Loop principal do código, onde ocorre o jogo da forca
+    do {
+
+        desenharForca();
+        realizarChute();
+
+    } while (!acertou() && !enforcou());
+    
+    if (acertou()) {
+
+        printf("Parabéns, você ganhou!\n");
+
+    } else {
+
+        printf("Poxa, você foi enforcado!\n");
+        printf("A palavra secreta era: **%s**\n\n", palavraSecreta);
+
+    }
+
+    adicionarNovaPalavra();
 
 }
