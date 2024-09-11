@@ -78,30 +78,30 @@ void desenharForca() {
 
 void escolherPalavra() {
 
-    FILE* f;
+    FILE* arquivo;
 
-    f = fopen("palavras.txt", "r");
+    arquivo = fopen("palavras.txt", "r");
 
-    if (f == 0) {
+    if (arquivo == 0) {
 
-        printf("Desculpe, banco de dados não está disponível\n");
+        printf("Desculpe, arquivo não foi aberto com sucesso\n");
         exit(1);
 
     }
 
     int quantidadeDePalavras;
-    fscanf(f, "%d", &quantidadeDePalavras);
+    fscanf(arquivo, "%d", &quantidadeDePalavras);
 
     srand(time(0));
     int randomizador = rand() % quantidadeDePalavras;
 
     for (int i = 0; i <= randomizador; i++) {
 
-        fscanf(f, "%s", palavraSecreta);
+        fscanf(arquivo, "%s", palavraSecreta);
 
     }
 
-    fclose(f);
+    fclose(arquivo);
 
 }
 
@@ -118,11 +118,11 @@ void adicionarNovaPalavra() {
         printf("Qual a nova palavra? \n");
         scanf("%s", novaPalavra);
 
-        FILE* f;
+        FILE* arquivo;
 
-        f = fopen("palavras.txt", "r+");
+        arquivo = fopen("palavras.txt", "r+");
 
-        if (f == 0) {
+        if (arquivo == 0) {
 
             printf("Desculpe, banco de dados não está disponível\n");
             exit(1);
@@ -130,18 +130,18 @@ void adicionarNovaPalavra() {
         }
 
         int quantidadePalavra;
-        fscanf(f, "%d", &quantidadePalavra);
+        fscanf(arquivo, "%d", &quantidadePalavra);
         quantidadePalavra++;
 
-        fseek(f , 0, SEEK_SET);
-        fprintf(f, "\n%s", novaPalavra);
+        fseek(arquivo , 0, SEEK_SET);
+        fprintf(arquivo, "\n%s", novaPalavra);
 
-        fseek(f , 0, SEEK_END);
-        fprintf(f, "\n%s", novaPalavra);
+        fseek(arquivo , 0, SEEK_END);
+        fprintf(arquivo, "\n%s", novaPalavra);
 
-        fprintf(f, "\n%s", novaPalavra);
+        fprintf(arquivo, "\n%s", novaPalavra);
 
-        fclose(f);
+        fclose(arquivo);
 
     }
 
