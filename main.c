@@ -35,7 +35,7 @@ int chuteJaRealizado(char letra) {
 
     int encontrada = 0;
 
-    // Loop para percorrer os chutes anteriores, armazenando os mesmos em Chutes Maximos
+    // Loop para percorrer os chutes anteriores
     for(int j = 0; j < chutesRealizados; j++) {
                 
         // Validação de acertos
@@ -172,7 +172,6 @@ int enforcou() {
             erros++;
         }
     }
-    // Return booleano
     return erros >= 5;
 }
 
